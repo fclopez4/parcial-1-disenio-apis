@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RestauranteModule } from './restaurante/restaurante.module';
-import { PlatoModule } from './plato/plato.module';
-import { RestaurantePlatoModule } from './restaurante-plato/restaurante-plato.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
+import { DishModule } from './dish/dish.module';
+import { RestaurantDishModule } from './restaurant-dish/restaurant-dish.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestauranteEntity } from './restaurante/restaurante.entity';
-import { PlatoEntity } from './plato/plato.entity';
+import { RestaurantEntity } from './restaurant/restaurant.entity';
+import { DishEntity } from './dish/dish.entity';
 
 @Module({
   imports: [
-    RestauranteModule,
-    PlatoModule,
-    RestaurantePlatoModule,
+    RestaurantModule,
+    DishModule,
+    RestaurantDishModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -20,7 +20,7 @@ import { PlatoEntity } from './plato/plato.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'restaurantes',
-      entities: [RestauranteEntity, PlatoEntity],
+      entities: [RestaurantEntity, DishEntity],
       dropSchema: true,
       synchronize: true,
     }),
