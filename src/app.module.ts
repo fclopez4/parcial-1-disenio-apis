@@ -19,7 +19,7 @@ import { DishEntity } from './dish/dish.entity';
       port: 5432,
       username: 'postgres',
       password: 'postgres',
-      database: 'restaurantes',
+      database: 'restaurants_db',
       entities: [RestaurantEntity, DishEntity],
       dropSchema: true,
       synchronize: true,
