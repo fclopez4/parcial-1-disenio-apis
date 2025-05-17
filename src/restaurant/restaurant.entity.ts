@@ -1,5 +1,5 @@
 import { DishEntity } from '../dish/dish.entity';
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Check, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum KitchenType {
   ITALIANA = 'italiana',
@@ -11,6 +11,9 @@ export enum KitchenType {
 }
 
 @Entity()
+@Check(
+  `kitchenType IN ('italiana', 'japonesa', 'mexicana', 'colombiana', 'india', 'internacional')`,
+)
 export class RestaurantEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,7 +21,13 @@ export class RestaurantEntity {
   name: string;
   @Column()
   address: string;
-  @Column({ type: 'enum', enum: KitchenType })
+  @Column({
+    type: 'text',
+    transformer: {
+      to: (value: KitchenType) => value,
+      from: (value: string) => value as KitchenType,
+    },
+  })
   kitchenType: KitchenType;
   @Column()
   websiteUrl: string;

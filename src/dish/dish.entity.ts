@@ -1,5 +1,5 @@
 import { RestaurantEntity } from '../restaurant/restaurant.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Check, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum DishCategory {
   ENTRADA = 'entrada',
@@ -9,6 +9,8 @@ export enum DishCategory {
 }
 
 @Entity()
+@Check(`category IN ('entrada', 'plato_fuerte', 'postre', 'bebida')`)
+@Check(`cost > 0`)
 export class DishEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -16,9 +18,15 @@ export class DishEntity {
   name: string;
   @Column()
   description: string;
-  @Column()
+  @Column('decimal', { precision: 10, scale: 2 })
   cost: number;
-  @Column({ type: 'enum', enum: DishCategory })
+  @Column({
+    type: 'text',
+    transformer: {
+      to: (value: DishCategory) => value,
+      from: (value: string) => value as DishCategory,
+    },
+  })
   category: DishCategory;
 
   @ManyToMany(() => RestaurantEntity, (restaurant) => restaurant.dishes)
