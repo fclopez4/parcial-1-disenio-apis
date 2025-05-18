@@ -29,7 +29,7 @@ describe('RestaurantService', () => {
       const restaurant: RestaurantEntity = await repository.save({
         name: faker.company.name(),
         address: faker.location.secondaryAddress(),
-        kitchenType: faker.helpers.arrayElement([
+        kitchentype: faker.helpers.arrayElement([
           KitchenType.ITALIANA,
           KitchenType.JAPONESA,
           KitchenType.MEXICANA,
@@ -37,7 +37,7 @@ describe('RestaurantService', () => {
           KitchenType.INDIA,
           KitchenType.INTERNACIONAL,
         ]),
-        websiteUrl: faker.internet.url(),
+        websiteurl: faker.internet.url(),
       });
       restaurantsList.push(restaurant);
     }
@@ -60,8 +60,8 @@ describe('RestaurantService', () => {
     expect(restaurant).not.toBeNull();
     expect(restaurant.name).toEqual(selectedRestaurant.name);
     expect(restaurant.address).toEqual(selectedRestaurant.address);
-    expect(restaurant.kitchenType).toEqual(selectedRestaurant.kitchenType);
-    expect(restaurant.websiteUrl).toEqual(selectedRestaurant.websiteUrl);
+    expect(restaurant.kitchentype).toEqual(selectedRestaurant.kitchentype);
+    expect(restaurant.websiteurl).toEqual(selectedRestaurant.websiteurl);
   });
 
   it('findOne should throw an exception for an invalid restaurant', async () => {
@@ -75,7 +75,7 @@ describe('RestaurantService', () => {
       id: '',
       name: faker.company.name(),
       address: faker.location.secondaryAddress(),
-      kitchenType: faker.helpers.arrayElement([
+      kitchentype: faker.helpers.arrayElement([
         KitchenType.ITALIANA,
         KitchenType.JAPONESA,
         KitchenType.MEXICANA,
@@ -83,7 +83,7 @@ describe('RestaurantService', () => {
         KitchenType.INDIA,
         KitchenType.INTERNACIONAL,
       ]),
-      websiteUrl: faker.internet.url(),
+      websiteurl: faker.internet.url(),
       dishes: [],
     };
     const createdRestaurant: RestaurantEntity = await service.create(newRestaurant);
@@ -95,8 +95,8 @@ describe('RestaurantService', () => {
     expect(storedRestaurant).not.toBeNull();
     expect(storedRestaurant!.name).toEqual(createdRestaurant.name);
     expect(storedRestaurant!.address).toEqual(createdRestaurant.address);
-    expect(storedRestaurant!.kitchenType).toEqual(createdRestaurant.kitchenType);
-    expect(storedRestaurant!.websiteUrl).toEqual(createdRestaurant.websiteUrl);
+    expect(storedRestaurant!.kitchentype).toEqual(createdRestaurant.kitchentype);
+    expect(storedRestaurant!.websiteurl).toEqual(createdRestaurant.websiteurl);
   });
 
   it('create should throw an exception for a restaurant with invalid kitchen type', async () => {
@@ -104,8 +104,8 @@ describe('RestaurantService', () => {
       id: '',
       name: faker.company.name(),
       address: faker.location.secondaryAddress(),
-      kitchenType: 'chilena' as KitchenType,
-      websiteUrl: faker.internet.url(),
+      kitchentype: 'chilena' as KitchenType,
+      websiteurl: faker.internet.url(),
       dishes: [],
     };
     await expect(() => service.create(newRestaurant)).rejects.toHaveProperty(
@@ -118,7 +118,7 @@ describe('RestaurantService', () => {
     const restaurant: RestaurantEntity = restaurantsList[0];
     restaurant.name = faker.company.name();
     restaurant.address = faker.location.secondaryAddress();
-    restaurant.kitchenType = faker.helpers.arrayElement([
+    restaurant.kitchentype = faker.helpers.arrayElement([
       KitchenType.ITALIANA,
       KitchenType.JAPONESA,
       KitchenType.MEXICANA,
@@ -126,7 +126,7 @@ describe('RestaurantService', () => {
       KitchenType.INDIA,
       KitchenType.INTERNACIONAL,
     ]);
-    restaurant.websiteUrl = faker.internet.url();
+    restaurant.websiteurl = faker.internet.url();
     const updatedRestaurant: RestaurantEntity = await service.update(restaurant.id, restaurant);
     expect(updatedRestaurant).not.toBeNull();
     const storedRestaurant: RestaurantEntity | null = await repository.findOne({
@@ -135,8 +135,8 @@ describe('RestaurantService', () => {
     expect(storedRestaurant).not.toBeNull();
     expect(storedRestaurant!.name).toEqual(restaurant.name);
     expect(storedRestaurant!.address).toEqual(restaurant.address);
-    expect(storedRestaurant!.kitchenType).toEqual(restaurant.kitchenType);
-    expect(storedRestaurant!.websiteUrl).toEqual(restaurant.websiteUrl);
+    expect(storedRestaurant!.kitchentype).toEqual(restaurant.kitchentype);
+    expect(storedRestaurant!.websiteurl).toEqual(restaurant.websiteurl);
   });
 
   it('update should throw an exception for an invalid restaurant', async () => {
@@ -155,8 +155,8 @@ describe('RestaurantService', () => {
     const restaurant: RestaurantEntity = restaurantsList[0];
     restaurant.name = faker.company.name();
     restaurant.address = faker.location.secondaryAddress();
-    restaurant.kitchenType = 'chilena' as KitchenType;
-    restaurant.websiteUrl = faker.internet.url();
+    restaurant.kitchentype = 'chilena' as KitchenType;
+    restaurant.websiteurl = faker.internet.url();
     await expect(() => service.update(restaurant.id, restaurant)).rejects.toHaveProperty(
       'message',
       `The kitchen type must be one of the following: ${Object.values(KitchenType).join(', ')}`,

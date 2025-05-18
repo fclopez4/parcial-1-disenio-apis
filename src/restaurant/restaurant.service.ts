@@ -46,12 +46,12 @@ export class RestaurantService {
   }
 
   async create(restaurant: RestaurantEntity): Promise<RestaurantEntity> {
-    this.validateKitchenType(restaurant.kitchenType);
+    this.validateKitchenType(restaurant.kitchentype);
     return await this.restaurantRepository.save(restaurant);
   }
 
   async update(id: string, restaurant: RestaurantEntity): Promise<RestaurantEntity> {
-    this.validateKitchenType(restaurant.kitchenType);
+    this.validateKitchenType(restaurant.kitchentype);
     const existingRestaurant = await this.findOne(id);
     this.validateRestaurantFound(existingRestaurant);
     return await this.restaurantRepository.save({ ...existingRestaurant, ...restaurant });

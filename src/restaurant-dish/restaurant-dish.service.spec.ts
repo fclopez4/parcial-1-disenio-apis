@@ -51,7 +51,7 @@ describe('RestaurantDishService', () => {
     restaurant = await restaurantRepository.save({
       name: faker.company.name(),
       address: faker.location.streetAddress(),
-      kitchenType: faker.helpers.arrayElement([
+      kitchentype: faker.helpers.arrayElement([
         KitchenType.ITALIANA,
         KitchenType.JAPONESA,
         KitchenType.MEXICANA,
@@ -60,7 +60,7 @@ describe('RestaurantDishService', () => {
         KitchenType.INTERNACIONAL,
       ]),
       dishes: dishesList,
-      websiteUrl: faker.internet.url(),
+      websiteurl: faker.internet.url(),
     });
   };
 

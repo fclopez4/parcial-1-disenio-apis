@@ -12,7 +12,7 @@ export enum KitchenType {
 
 @Entity()
 @Check(
-  `kitchenType IN ('italiana', 'japonesa', 'mexicana', 'colombiana', 'india', 'internacional')`,
+  `kitchentype IN ('italiana', 'japonesa', 'mexicana', 'colombiana', 'india', 'internacional')`,
 )
 export class RestaurantEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -28,9 +28,9 @@ export class RestaurantEntity {
       from: (value: string) => value as KitchenType,
     },
   })
-  kitchenType: KitchenType;
+  kitchentype: KitchenType;
   @Column()
-  websiteUrl: string;
+  websiteurl: string;
 
   @ManyToMany(() => DishEntity, (dish) => dish.restaurants)
   @JoinTable()

@@ -13,10 +13,10 @@ export class RestaurantDto {
 
   @IsNotEmpty()
   @IsString()
-  readonly kitchenType: string;
+  readonly kitchentype: string;
 
   @IsNotEmpty()
   @IsString()
   @IsUrl()
-  readonly websiteUrl: string[];
+  readonly websiteurl: string[];
 }
