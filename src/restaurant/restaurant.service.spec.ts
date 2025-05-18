@@ -71,7 +71,8 @@ describe('RestaurantService', () => {
   });
 
   it('create should return a new restaurant', async () => {
-    const newRestaurant: RestaurantEntity = await repository.save({
+    const newRestaurant: RestaurantEntity = {
+      id: '',
       name: faker.company.name(),
       address: faker.location.secondaryAddress(),
       kitchenType: faker.helpers.arrayElement([
@@ -83,18 +84,34 @@ describe('RestaurantService', () => {
         KitchenType.INTERNACIONAL,
       ]),
       websiteUrl: faker.internet.url(),
-    });
-
-    expect(newRestaurant).not.toBeNull();
+      dishes: [],
+    };
+    const createdRestaurant: RestaurantEntity = await service.create(newRestaurant);
+    expect(createdRestaurant).not.toBeNull();
 
     const storedRestaurant: RestaurantEntity | null = await repository.findOne({
-      where: { id: newRestaurant.id },
+      where: { id: createdRestaurant.id },
     });
     expect(storedRestaurant).not.toBeNull();
-    expect(storedRestaurant!.name).toEqual(newRestaurant.name);
-    expect(storedRestaurant!.address).toEqual(newRestaurant.address);
-    expect(storedRestaurant!.kitchenType).toEqual(newRestaurant.kitchenType);
-    expect(storedRestaurant!.websiteUrl).toEqual(newRestaurant.websiteUrl);
+    expect(storedRestaurant!.name).toEqual(createdRestaurant.name);
+    expect(storedRestaurant!.address).toEqual(createdRestaurant.address);
+    expect(storedRestaurant!.kitchenType).toEqual(createdRestaurant.kitchenType);
+    expect(storedRestaurant!.websiteUrl).toEqual(createdRestaurant.websiteUrl);
+  });
+
+  it('create should throw an exception for a restaurant with invalid kitchen type', async () => {
+    const newRestaurant: RestaurantEntity = {
+      id: '',
+      name: faker.company.name(),
+      address: faker.location.secondaryAddress(),
+      kitchenType: 'chilena' as KitchenType,
+      websiteUrl: faker.internet.url(),
+      dishes: [],
+    };
+    await expect(() => service.create(newRestaurant)).rejects.toHaveProperty(
+      'message',
+      `The kitchen type must be one of the following: ${Object.values(KitchenType).join(', ')}`,
+    );
   });
 
   it('update should modify a restaurant', async () => {
@@ -134,7 +151,7 @@ describe('RestaurantService', () => {
     ).rejects.toHaveProperty('message', 'The restaurant with the given id was not found');
   });
 
-  it('update should throw an exception for invalid restaurant properties values', async () => {
+  it('update should throw an exception for a restaurant with invalid kitchen type', async () => {
     const restaurant: RestaurantEntity = restaurantsList[0];
     restaurant.name = faker.company.name();
     restaurant.address = faker.location.secondaryAddress();

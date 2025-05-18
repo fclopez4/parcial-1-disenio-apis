@@ -69,7 +69,8 @@ describe('DishService', () => {
   });
 
   it('create should return a new dish', async () => {
-    const newDish: DishEntity = await repository.save({
+    const newDish: DishEntity = {
+      id: '',
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
       cost: parseFloat(faker.commerce.price()),
@@ -79,16 +80,53 @@ describe('DishService', () => {
         DishCategory.POSTRE,
         DishCategory.BEBIDA,
       ]),
-    });
-    expect(newDish).not.toBeNull();
+      restaurants: [],
+    };
+    const createdDish: DishEntity = await service.create(newDish);
+    expect(createdDish).not.toBeNull();
     const storedDish: DishEntity | null = await repository.findOne({
-      where: { id: newDish.id },
+      where: { id: createdDish.id },
     });
     expect(storedDish).not.toBeNull();
-    expect(storedDish!.name).toEqual(newDish.name);
-    expect(storedDish!.description).toEqual(newDish.description);
-    expect(storedDish!.cost).toEqual(newDish.cost);
-    expect(storedDish!.category).toEqual(newDish.category);
+    expect(storedDish!.name).toEqual(createdDish.name);
+    expect(storedDish!.description).toEqual(createdDish.description);
+    expect(storedDish!.cost).toEqual(createdDish.cost);
+    expect(storedDish!.category).toEqual(createdDish.category);
+  });
+
+  it('create should throw an exception for a dish with invalid category value', async () => {
+    const newDish: DishEntity = {
+      id: '',
+      name: faker.commerce.productName(),
+      description: faker.commerce.productDescription(),
+      cost: parseFloat(faker.commerce.price()),
+      category: 'sopas' as DishCategory,
+      restaurants: [],
+    };
+    await expect(() => service.create(newDish)).rejects.toHaveProperty(
+      'message',
+      `The category must be one of the following: ${Object.values(DishCategory).join(', ')}`,
+    );
+  });
+
+  it('create should throw an exception for a dish with invalid cost value', async () => {
+    const newDish: DishEntity = {
+      id: '',
+      name: faker.commerce.productName(),
+      description: faker.commerce.productDescription(),
+      cost: -100,
+      category: faker.helpers.arrayElement([
+        DishCategory.ENTRADA,
+        DishCategory.PLATO_FUERTE,
+        DishCategory.POSTRE,
+        DishCategory.BEBIDA,
+      ]),
+      restaurants: [],
+    };
+    await expect(() => service.create(newDish)).rejects.toHaveProperty(
+      'message',
+      'The cost must be a positive number',
+    );
   });
 
   it('update should modify a dish', async () => {
@@ -126,7 +164,7 @@ describe('DishService', () => {
     ).rejects.toHaveProperty('message', 'The dish with the given id was not found');
   });
 
-  it('update should throw an exception for invalid dish properties values', async () => {
+  it('update should throw an exception for a dish with invalid category value', async () => {
     const dish: DishEntity = dishesList[0];
     dish.name = faker.commerce.productName();
     dish.description = faker.commerce.productDescription();
@@ -137,8 +175,21 @@ describe('DishService', () => {
       'message',
       `The category must be one of the following: ${Object.values(DishCategory).join(', ')}`,
     );
+  });
 
+  it('update should throw an exception for a dish with invalid cost value', async () => {
+    const dish: DishEntity = dishesList[0];
+    dish.name = faker.commerce.productName();
+    dish.description = faker.commerce.productDescription();
+    dish.cost = parseFloat(faker.commerce.price());
+    dish.category = faker.helpers.arrayElement([
+      DishCategory.ENTRADA,
+      DishCategory.PLATO_FUERTE,
+      DishCategory.POSTRE,
+      DishCategory.BEBIDA,
+    ]);
     dish.cost = -100;
+
     await expect(() => service.update(dish.id, dish)).rejects.toHaveProperty(
       'message',
       'The cost must be a positive number',
