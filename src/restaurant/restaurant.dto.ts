@@ -1,5 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString, IsUrl, MaxLength } from 'class-validator';
-import { KitchenType } from './restaurant.entity';
+import { IsNotEmpty, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class RestaurantDto {
   @IsNotEmpty()
@@ -13,10 +12,8 @@ export class RestaurantDto {
   readonly address: string;
 
   @IsNotEmpty()
-  @IsEnum(KitchenType, {
-    message: `Tipo de cocina debe ser uno de: ${Object.values(KitchenType).join(', ')}`,
-  })
-  readonly kitchenType: KitchenType;
+  @IsString()
+  readonly kitchenType: string;
 
   @IsNotEmpty()
   @IsString()
