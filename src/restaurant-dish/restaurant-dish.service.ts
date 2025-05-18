@@ -47,6 +47,13 @@ export class RestaurantDishService {
   }
 
   async findDishFromRestaurant(restaurantId: string, dishId: string): Promise<DishEntity> {
+    const dish = await this.dishRepository.findOne({
+      where: { id: dishId },
+    });
+    if (!dish) {
+      throw new BusinessLogicException('Dish not found', BusinessError.NOT_FOUND);
+    }
+
     const restaurant = await this.restaurantRepository.findOne({
       where: { id: restaurantId },
       relations: ['dishes'],
@@ -55,19 +62,23 @@ export class RestaurantDishService {
       throw new BusinessLogicException('Restaurant not found', BusinessError.NOT_FOUND);
     }
 
-    const dish = restaurant.dishes.find((dish) => dish.id === dishId);
-    if (!dish) {
-      throw new BusinessLogicException('Dish not found in the restaurant', BusinessError.NOT_FOUND);
+    const restaurantDish = restaurant.dishes.find(
+      (associatedDish) => associatedDish.id === dish.id,
+    );
+    if (!restaurantDish) {
+      throw new BusinessLogicException(
+        'Dish not found in the restaurant',
+        BusinessError.PRECONDITION_FAILED,
+      );
     }
 
-    return dish;
+    return restaurantDish;
   }
 
   async updateDishesFromRestaurant(
     restaurantId: string,
-    dishId: string,
-    dish: DishEntity,
-  ): Promise<DishEntity> {
+    dishes: DishEntity[],
+  ): Promise<RestaurantEntity> {
     const restaurant = await this.restaurantRepository.findOne({
       where: { id: restaurantId },
       relations: ['dishes'],
@@ -76,16 +87,37 @@ export class RestaurantDishService {
       throw new BusinessLogicException('Restaurant not found', BusinessError.NOT_FOUND);
     }
 
-    const existingDish = restaurant.dishes.find((dish) => dish.id === dishId);
-    if (!existingDish) {
-      throw new BusinessLogicException('Dish not found in the restaurant', BusinessError.NOT_FOUND);
+    for (const dish of dishes) {
+      const existingDish = await this.dishRepository.findOne({ where: { id: dish.id } });
+      if (!existingDish) {
+        throw new BusinessLogicException('Dish not found', BusinessError.NOT_FOUND);
+      }
     }
 
-    Object.assign(existingDish, dish);
-    return await this.dishRepository.save(existingDish);
+    for (const dish of dishes) {
+      const existingDish = restaurant.dishes.find(
+        (associatedDish) => associatedDish.id === dish.id,
+      );
+      if (!existingDish) {
+        throw new BusinessLogicException(
+          'Dish not found in the restaurant',
+          BusinessError.PRECONDITION_FAILED,
+        );
+      }
+    }
+
+    restaurant.dishes = dishes;
+    return await this.restaurantRepository.save(restaurant);
   }
 
-  async deleteDishFromRestaurant(restaurantId: string, dishId: string): Promise<DishEntity> {
+  async deleteDishFromRestaurant(restaurantId: string, dishId: string): Promise<RestaurantEntity> {
+    const dish = await this.dishRepository.findOne({
+      where: { id: dishId },
+    });
+    if (!dish) {
+      throw new BusinessLogicException('Dish not found', BusinessError.NOT_FOUND);
+    }
+
     const restaurant = await this.restaurantRepository.findOne({
       where: { id: restaurantId },
       relations: ['dishes'],
@@ -94,13 +126,17 @@ export class RestaurantDishService {
       throw new BusinessLogicException('Restaurant not found', BusinessError.NOT_FOUND);
     }
 
-    const dishIndex = restaurant.dishes.findIndex((dish) => dish.id === dishId);
-    if (dishIndex === -1) {
-      throw new BusinessLogicException('Dish not found in the restaurant', BusinessError.NOT_FOUND);
+    const restaurantDish = restaurant.dishes.find(
+      (associatedDish) => associatedDish.id === dish.id,
+    );
+    if (!restaurantDish) {
+      throw new BusinessLogicException(
+        'Dish not found in the restaurant',
+        BusinessError.PRECONDITION_FAILED,
+      );
     }
 
-    const [removedDish] = restaurant.dishes.splice(dishIndex, 1);
-    await this.restaurantRepository.save(restaurant);
-    return removedDish;
+    restaurant.dishes = restaurant.dishes.filter((e) => e.id !== dish.id);
+    return this.restaurantRepository.save(restaurant);
   }
 }
