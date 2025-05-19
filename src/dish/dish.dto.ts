@@ -19,7 +19,7 @@ export class DishDto {
 
   @IsNotEmpty()
   @IsEnum(DishCategory, {
-    message: `Categoría debe ser uno de: ${Object.values(DishCategory).join(', ')}`,
+    message: `category should be one of : ${Object.values(DishCategory).join(', ')}`,
   })
   readonly category: string;
 }

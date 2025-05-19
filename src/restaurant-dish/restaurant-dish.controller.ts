@@ -41,7 +41,7 @@ export class RestaurantDishController {
     return await this.restaurantDishService.findDishFromRestaurant(restaurantId, dishId);
   }
 
-  @Put(':restaurantId/dishes/:dishId')
+  @Put(':restaurantId/dishes')
   async updateDishFromRestaurant(
     @Param('restaurantId') restaurantId: string,
     @Body() dishDto: DishDto[],
